@@ -441,13 +441,11 @@ func (p *Parser) ParseMov(item string, line string) {
 	args := strings.Split(item, ",")
 	arg1 := strings.TrimSpace(args[0])
 	arg2 := strings.TrimSpace(args[1])
-	if IsNum(arg2) {
-		res, err := strconv.ParseInt(arg2, 10, 64)
-		HandleErr(err)
+	if num, ok := ParseNum(arg2); ok {
 		p.TextItems = append(p.TextItems, &TextItem{
 			Type:    TextMovI2R,
 			Name:    arg1,
-			Num:     int(res),
+			Num:     num,
 			RowLine: line,
 		})
 	} else {

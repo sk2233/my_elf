@@ -2,7 +2,7 @@ section .data
         file db "test.txt",0 ; 文件名称必须以 0 结尾
 
 section .bss
-        text resb 7
+        text resb 8
 
 section .text
         global _start
@@ -18,7 +18,7 @@ _start:
         mov rdi,rax  ; 读取文件
         mov rax,0
         mov rsi,text
-        mov rdx,7
+        mov rdx,8
         syscall
 
         mov rax,3  ; 关闭文件
@@ -28,7 +28,7 @@ _start:
         mov rax,1  ; 打印读取的内容
         mov rdi,1
         mov rsi,text
-        mov rdx,7
+        mov rdx,8
         syscall
 
         mov rax,60

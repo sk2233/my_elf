@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
+	"strconv"
 )
 
 func HandleErr(err error) {
@@ -11,16 +13,27 @@ func HandleErr(err error) {
 	}
 }
 
-func IsNum(val string) bool {
+func ParseNum(val string) (int, bool) {
 	if len(val) == 0 {
-		return false
+		return 0, false
 	}
-	for i := 0; i < len(val); i++ {
-		if val[i] < '0' || val[i] > '9' {
-			return false
+	if val[0] == '0' && len(val) > 2 { // 非 10 进制
+		base := 0
+		switch val[len(val)-1] {
+		case 'o':
+			base = 8
+		default:
+			panic(fmt.Sprintf("unknown base %v", val[len(val)-1]))
 		}
+		res, err := strconv.ParseInt(val[1:len(val)-1], base, 64)
+		HandleErr(err)
+		return int(res), true
 	}
-	return true
+	res, err := strconv.ParseInt(val, 10, 64)
+	if err != nil {
+		return 0, false
+	}
+	return int(res), true
 }
 
 func WriteAny(w io.Writer, data interface{}) {

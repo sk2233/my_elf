@@ -8,7 +8,7 @@ section .text
 _start:
         mov rax,2     ; 打开文件
         mov rdi,file
-        mov rsi,64+1
+        mov rsi,65
         mov rdx,0644o  ; 必须使用 o 表示 8进制
         syscall
         push rax

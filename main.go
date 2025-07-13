@@ -1,7 +1,8 @@
 package main
 
 func main() {
-	parser := NewParser("asm/num.asm")
+	// TODO  num.asm 解析失败
+	parser := NewParser("asm/write.asm")
 	parser.Parse()
 	filler := NewFiller(parser.DataItems, parser.BssItems, parser.TextItems)
 	filler.Fill()
