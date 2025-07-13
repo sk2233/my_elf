@@ -1,7 +1,7 @@
 package main
 
 func main() {
-	parser := NewParser("asm/num.asm")
+	parser := NewParser("asm/input.asm")
 	parser.Parse()
 	filler := NewFiller(parser.DataItems, parser.BssItems, parser.TextItems)
 	filler.Fill()
