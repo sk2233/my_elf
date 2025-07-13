@@ -66,10 +66,8 @@ func (i *TextItem) GetSize() int {
 	case TextPush, TextPop:
 		registerInfo := GetRegisterInfo(i.Name)
 		switch registerInfo.BitCount {
-		case 32:
-			return 1
 		case 64:
-			return 2
+			return 1
 		default:
 			panic(fmt.Sprintf("not supported bit %v", registerInfo.BitCount))
 		}
@@ -236,10 +234,8 @@ func (i *TextItem) makeMovI2RData(name string, num int) []byte {
 func (i *TextItem) getPushData() []byte {
 	registerInfo := GetRegisterInfo(i.Name)
 	switch registerInfo.BitCount {
-	case 32:
+	case 64:
 		return []byte{0x50 | registerInfo.RegCode}
-	case 64: // 64 位需要额外的 0x48 标识符
-		return []byte{0x48, 0x50 | registerInfo.RegCode}
 	default:
 		panic(fmt.Sprintf("not supported bit %v", registerInfo.BitCount))
 	}
@@ -248,10 +244,8 @@ func (i *TextItem) getPushData() []byte {
 func (i *TextItem) getPopData() []byte {
 	registerInfo := GetRegisterInfo(i.Name)
 	switch registerInfo.BitCount {
-	case 32:
+	case 64:
 		return []byte{0x58 | registerInfo.RegCode}
-	case 64: // 64 位需要额外的 0x48 标识符
-		return []byte{0x48, 0x58 | registerInfo.RegCode}
 	default:
 		panic(fmt.Sprintf("not supported bit %v", registerInfo.BitCount))
 	}
