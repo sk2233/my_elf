@@ -30,7 +30,7 @@ type TextItem struct {
 }
 
 func (i *TextItem) String() string {
-	return fmt.Sprintf("%d:%s\t% X", TextVAddr+BaseOffset+i.Pos, i.RowLine, i.GetData())
+	return fmt.Sprintf("%X:%s\t% X", TextVAddr+BaseOffset+i.Pos, i.RowLine, i.GetData())
 }
 
 func (i *TextItem) GetSize() int {
@@ -102,8 +102,14 @@ func (i *TextItem) GetSize() int {
 			}
 			return 3
 		case 32:
+			if i.Num == 0 {
+				return 2 + 1
+			}
 			return 2 + 4
 		case 64:
+			if i.Num == 0 {
+				return 3 + 1
+			}
 			return 3 + 8
 		default:
 			panic(fmt.Sprintf("not supported bit %v", registerInfo.BitCount))
@@ -115,6 +121,7 @@ func (i *TextItem) GetSize() int {
 	}
 }
 
+// 注意字节码中的立即数可能以更低bit 存储，前缀码中有标识，最好保持一致 额外的  00  并不是  nop
 func (i *TextItem) GetData() []byte {
 	switch i.Type {
 	case TextTag:
@@ -271,8 +278,14 @@ func (i *TextItem) getCmpData() []byte {
 		}
 		return []byte{0x80, 0xF8 | registerInfo.RegCode, byte(i.Num)}
 	case 32:
+		if i.Num == 0 {
+			return append([]byte{0x83, 0xF8 | registerInfo.RegCode}, 0)
+		} // 83 操作码指定了立即数只有 8 位，其他情况就不是 83 了
 		return append([]byte{0x83, 0xF8 | registerInfo.RegCode}, FromU32(uint32(i.Num))...)
 	case 64: // 64 位需要额外的 0x48 标识符
+		if i.Num == 0 {
+			return append([]byte{0x48, 0x83, 0xF8 | registerInfo.RegCode}, 0)
+		}
 		return append([]byte{0x48, 0x83, 0xF8 | registerInfo.RegCode}, FromU64(uint64(i.Num))...)
 	default:
 		panic(fmt.Sprintf("not supported bit %v", registerInfo.BitCount))
