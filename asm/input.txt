@@ -1,0 +1,38 @@
+
+input:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000000000 <_start>:
+   0:	48 be 00 00 00 00 00 	movabs $0x0,%rsi
+   7:	00 00 00 
+   a:	ba 12 00 00 00       	mov    $0x12,%edx
+   f:	e8 39 00 00 00       	call   4d <_print>
+  14:	e8 41 00 00 00       	call   5a <_input>
+  19:	48 be 00 00 00 00 00 	movabs $0x0,%rsi
+  20:	00 00 00 
+  23:	ba 06 00 00 00       	mov    $0x6,%edx
+  28:	e8 20 00 00 00       	call   4d <_print>
+  2d:	48 be 00 00 00 00 00 	movabs $0x0,%rsi
+  34:	00 00 00 
+  37:	ba 10 00 00 00       	mov    $0x10,%edx
+  3c:	e8 0c 00 00 00       	call   4d <_print>
+  41:	b8 3c 00 00 00       	mov    $0x3c,%eax
+  46:	bf 00 00 00 00       	mov    $0x0,%edi
+  4b:	0f 05                	syscall 
+
+000000000000004d <_print>:
+  4d:	b8 01 00 00 00       	mov    $0x1,%eax
+  52:	bf 01 00 00 00       	mov    $0x1,%edi
+  57:	0f 05                	syscall 
+  59:	c3                   	ret    
+
+000000000000005a <_input>:
+  5a:	b8 00 00 00 00       	mov    $0x0,%eax
+  5f:	bf 00 00 00 00       	mov    $0x0,%edi
+  64:	48 be 00 00 00 00 00 	movabs $0x0,%rsi
+  6b:	00 00 00 
+  6e:	ba 10 00 00 00       	mov    $0x10,%edx
+  73:	0f 05                	syscall 
+  75:	c3                   	ret    
