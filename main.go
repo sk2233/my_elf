@@ -1,10 +1,8 @@
 package main
 
+import "my_elf/c"
+
 func main() {
-	parser := NewParser("asm/read.asm")
-	parser.Parse()
-	filler := NewFiller(parser.DataItems, parser.BssItems, parser.TextItems)
-	filler.Fill()
-	writer := NewWriter(filler.DataItems, filler.TextItems, filler.PosInfo)
-	writer.Write("asm/obj")
+	//asm.Compile("source/asm/read.asm", "source/build/obj")
+	c.Compilation("source/c/test.c", "source/build/asm.asm")
 }

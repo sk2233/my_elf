@@ -1,6 +1,8 @@
-package main
+package asm
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type TagInfo struct {
 	Pos     int

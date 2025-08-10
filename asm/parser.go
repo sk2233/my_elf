@@ -1,7 +1,8 @@
-package main
+package asm
 
 import (
 	"fmt"
+	"my_elf/utils"
 	"os"
 	"strconv"
 	"strings"
@@ -135,7 +136,7 @@ func (i *TextItem) GetData() []byte {
 	case TextMovR2M:
 		return i.getMovR2MData()
 	case TextCall: // 只考虑相对调用
-		return append([]byte{0xE8}, FromU32(uint32(i.Addr-(i.Pos+5)))...)
+		return append([]byte{0xE8}, utils.FromU32(uint32(i.Addr-(i.Pos+5)))...)
 	case TextSyscall:
 		return []byte{0x0F, 0x05}
 	case TextRet:
@@ -223,9 +224,9 @@ func (i *TextItem) makeMovI2RData(name string, num int) []byte {
 	registerInfo := GetRegisterInfo(name)
 	switch registerInfo.BitCount {
 	case 32:
-		return append([]byte{0b1011_1000 | registerInfo.RegCode}, FromU64(uint64(num))...)
+		return append([]byte{0b1011_1000 | registerInfo.RegCode}, utils.FromU64(uint64(num))...)
 	case 64: // 64 位需要额外的 0x48 标识符
-		return append([]byte{0x48, 0b1011_1000 | registerInfo.RegCode}, FromU64(uint64(num))...)
+		return append([]byte{0x48, 0b1011_1000 | registerInfo.RegCode}, utils.FromU64(uint64(num))...)
 	default:
 		panic(fmt.Sprintf("not supported bit %v", registerInfo.BitCount))
 	}
@@ -275,12 +276,12 @@ func (i *TextItem) getCmpData() []byte {
 		if i.Num == 0 {
 			return append([]byte{0x83, 0xF8 | registerInfo.RegCode}, 0)
 		} // 83 操作码指定了立即数只有 8 位，其他情况就不是 83 了
-		return append([]byte{0x83, 0xF8 | registerInfo.RegCode}, FromU32(uint32(i.Num))...)
+		return append([]byte{0x83, 0xF8 | registerInfo.RegCode}, utils.FromU32(uint32(i.Num))...)
 	case 64: // 64 位需要额外的 0x48 标识符
 		if i.Num == 0 {
 			return append([]byte{0x48, 0x83, 0xF8 | registerInfo.RegCode}, 0)
 		}
-		return append([]byte{0x48, 0x83, 0xF8 | registerInfo.RegCode}, FromU64(uint64(i.Num))...)
+		return append([]byte{0x48, 0x83, 0xF8 | registerInfo.RegCode}, utils.FromU64(uint64(i.Num))...)
 	default:
 		panic(fmt.Sprintf("not supported bit %v", registerInfo.BitCount))
 	}
@@ -373,7 +374,7 @@ func (p *Parser) getData(dataType string, row string) []byte {
 				}
 			} else { // 数字
 				temp, err := strconv.ParseUint(item, 10, 8)
-				HandleErr(err)
+				utils.HandleErr(err)
 				res = append(res, byte(temp))
 			}
 		}
@@ -437,7 +438,7 @@ func (p *Parser) ParseBss(line string) {
 		panic(fmt.Sprintf("unknown bssType %s", items[1]))
 	}
 	res, err := strconv.ParseInt(items[2], 10, 64)
-	HandleErr(err)
+	utils.HandleErr(err)
 	p.BssItems = append(p.BssItems, &BssItem{
 		Name: items[0],
 		Size: int(res),
@@ -448,7 +449,7 @@ func (p *Parser) ParseMov(item string, line string) {
 	args := strings.Split(item, ",")
 	arg1 := strings.TrimSpace(args[0])
 	arg2 := strings.TrimSpace(args[1])
-	if num, ok := ParseNum(arg2); ok {
+	if num, ok := utils.ParseNum(arg2); ok {
 		p.TextItems = append(p.TextItems, &TextItem{
 			Type:    TextMovI2R,
 			Name:    arg1,
@@ -538,7 +539,7 @@ func (p *Parser) ParseInc(name string, line string) {
 func (p *Parser) ParseCmp(item string, line string) {
 	args := strings.Split(item, ",")
 	res, err := strconv.ParseInt(args[1], 10, 64)
-	HandleErr(err) // 先只管 寄存器与立即数的比较
+	utils.HandleErr(err) // 先只管 寄存器与立即数的比较
 	p.TextItems = append(p.TextItems, &TextItem{
 		Type:    TextCmp,
 		Name:    args[0],
@@ -566,7 +567,7 @@ func (p *Parser) ParseDiv(item string, line string) {
 func (p *Parser) ParseAdd(item string, line string) {
 	args := strings.Split(item, ",") // reg,num
 	res, err := strconv.ParseInt(args[1], 10, 64)
-	HandleErr(err)
+	utils.HandleErr(err)
 	p.TextItems = append(p.TextItems, &TextItem{
 		Type:    TextAdd,
 		Name:    args[0],
@@ -577,7 +578,7 @@ func (p *Parser) ParseAdd(item string, line string) {
 
 func NewParser(path string) *Parser {
 	bs, err := os.ReadFile(path)
-	HandleErr(err)
+	utils.HandleErr(err)
 	lines := strings.Split(string(bs), "\n")
 	return &Parser{Lines: lines}
 }

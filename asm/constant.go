@@ -1,4 +1,4 @@
-package main
+package asm
 
 const (
 	SectionData = "data"

@@ -1,1 +1,4 @@
-.idea
+!.gitkeep
+.DS_Store
+/.idea
+source/build

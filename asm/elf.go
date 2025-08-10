@@ -1,4 +1,4 @@
-package main
+package asm
 
 const (
 	MagicELF = 0x464C457F
